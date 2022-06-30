@@ -1,0 +1,32 @@
+.signGithub {
+  height: 3rem;
+  border-radius: 3rem;
+
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  background: var(--gray-700);
+  color:  var(--white);
+  font-weight: 700;
+
+  transition: .2s;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  svg:first-child {
+    margin-right: 1rem;
+  }
+
+  svg.closeButton:last-child {
+    margin-left: 1rem;
+  }
+
+  &:hover {
+    filter: brightness(0.8);
+  }
+
+  border: none;
+}
