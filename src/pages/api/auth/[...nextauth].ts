@@ -1,4 +1,4 @@
-import { fauna } from "../faunaDB"
+import { fauna } from "../../../services/fauna"
 import { Collection, Create, Exists, If, Index, Match, Not, Casefold, Get } from "faunadb"
 import NextAuth from "next-auth"
 import GithubProvider from "next-auth/providers/github"
