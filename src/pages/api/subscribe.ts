@@ -32,6 +32,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     /* busco o campo que vai identificar se o usuario ja é/foi cliente da aplicação */
     let customerId = faunaUser.data.stripe_customer_id
 
+    /* como só vai ser criado um id de checkout novo se for um new user, evita assim duplicação de dados no stripe */
     if(!customerId) {
       /* aqui é criado um customer/cliente no stripe */
       const stripeCustomer = await stripe.customers.create({
