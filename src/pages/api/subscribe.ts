@@ -1,6 +1,17 @@
+import { Get, Index, Match, Casefold, Update, Collection, Ref } from "faunadb";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
+import { fauna } from "../../services/fauna";
 import { stripe } from "../../services/stripe";
+
+interface FaunaUserProps {
+  ref: {
+    id: string
+  }
+  data: {
+    stripe_customer_id: string
+  }
+}
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if(req.method === 'POST') {
@@ -8,14 +19,42 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     if(!session?.user?.email) return
 
-    /* aqui é criado um customer no stripe */
-    const stripeCustomer = await stripe.customers.create({
-      email: session.user.email
-    })
+    /* essa função busca os dados do user salvo no fauna que corresponde ao email do user logado na aplicação */
+    const faunaUser = await fauna.query<FaunaUserProps>(
+      Get(
+        Match(
+          Index('user_by_email'),
+          Casefold(session.user.email)
+        )
+      )
+    )
+
+    /* busco o campo que vai identificar se o usuario ja é/foi cliente da aplicação */
+    let customerId = faunaUser.data.stripe_customer_id
+
+    if(!customerId) {
+      /* aqui é criado um customer/cliente no stripe */
+      const stripeCustomer = await stripe.customers.create({
+        email: session.user.email
+      })
+
+      /* se não for cliente, crio o novo campo nos dados pelo seu id */
+      await fauna.query(
+        Update(
+          Ref(Collection('users'), faunaUser.ref.id), {
+            data: {
+              stripe_customer_id: stripeCustomer.id
+            }
+          }
+        )
+      )
+
+      customerId = stripeCustomer.id
+    }
 
     /* aqui é criado um checkout para o usuario criado a cima pelo seu id */
     const createStripeCheckout = await stripe.checkout.sessions.create({
-      customer: stripeCustomer.id,
+      customer: customerId,
       payment_method_types: ['card'],
       billing_address_collection: 'required',
       mode: 'subscription',
