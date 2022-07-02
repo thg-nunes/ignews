@@ -28,6 +28,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     })
 
+    /* o id desse checkout é retornado para usa-lo no redirect to checkout do stripe */
     res.status(200).json({sessionId: createStripeCheckout.id})
 
   } else {
