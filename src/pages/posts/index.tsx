@@ -5,7 +5,18 @@ import { getPrismicClient } from "../../services/prismic"
 
 import styles from './styles.module.scss'
 
-export default function ()  {
+interface Post {
+  slug: string
+  updatedAt: string
+  excerpt: string
+  title: string
+}
+
+interface PostsProps {
+  posts: Post []
+}
+
+export default function Posts({posts}: PostsProps)  {
   return (
     <>
       <Head>
@@ -14,21 +25,13 @@ export default function ()  {
 
       <main>
         <div className={styles.container}>
-          <a className={styles.posts}>
-            <time>12 de março de 2021</time>
-            <strong>Creating a Monorepo with Lerna & Yarn Workspaces</strong>
-            <p>In this guide, you will learn how to create a Monorepo to manage multiple packages with a shared build, test, and release process.</p>
-          </a>
-          <a className={styles.posts}>
-            <time>12 de março de 2021</time>
-            <strong>Creating a Monorepo with Lerna & Yarn Workspaces</strong>
-            <p>In this guide, you will learn how to create a Monorepo to manage multiple packages with a shared build, test, and release process.</p>
-          </a>
-          <a className={styles.posts}>
-            <time>12 de março de 2021</time>
-            <strong>Creating a Monorepo with Lerna & Yarn Workspaces</strong>
-            <p>In this guide, you will learn how to create a Monorepo to manage multiple packages with a shared build, test, and release process.</p>
-          </a>
+          {posts.map(post => (
+            <a key={post.slug} className={styles.posts}>
+              <time>{post.updatedAt}</time>
+              <strong>{post.title}</strong>
+              <p>{post.excerpt}</p>
+            </a>
+          ))}
         </div>
       </main>
     </>
@@ -41,8 +44,23 @@ export const getStaticProps: GetStaticProps = async () => {
     fetch: ['post.title', 'post.text']
   })
 
+  const posts = response.map(post => (
+    {
+      slug: post.uid,
+      updatedAt: new Date(post.last_publication_date).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      }),
+      title: post.data.title[0].text,
+      excerpt: post.data.text.find(textType => textType.type === 'paragraph')?.text ?? ''
+    }
+  ))
+
   return {
-    props: {},
+    props: {
+      posts
+    },
     revalidate: 60 * 60 * 30
   }
 }
