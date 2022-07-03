@@ -1,4 +1,7 @@
 import { SignGithub } from '../signGithub'
+
+import { ActiveLink } from '../activeLink'
+
 import styles from './styles.module.scss'
 
 export const Header = () => {
@@ -7,8 +10,12 @@ export const Header = () => {
       <div className={styles.headerContent}>
         <img src="/images/logo.svg" alt="logo ig-news" />
         <nav>
-          <a className={styles.active}>Home</a>
-          <a>Posts</a>
+          <ActiveLink activeClassName={styles.active} href='/'>
+            <a>Home</a>
+          </ActiveLink>
+          <ActiveLink activeClassName={styles.active} href='/posts'>
+            <a>Posts</a>
+          </ActiveLink>
         </nav>
 
         <SignGithub />
