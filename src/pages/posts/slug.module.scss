@@ -14,19 +14,23 @@
   time {
     display: block;
     color: var(--gray-300);
-    line-height: 1.7rem;
+    line-height: 1rem;
     margin-top: 1.7rem;
     margin-bottom: 1.7rem;
   }
 }
 
 .postContent {
-  section {
-     span {
-      display: inline-block;
-      font-size: 1.7rem;
-      line-height: 1.7rem;
-      color: red;
-    }
+  h3 {
+    font-size: 2rem;
+    margin: 1rem 0 .5rem;
   }
+
+  p {
+    font-size: 1.125rem;
+    line-height: 1.85rem;
+    font-weight: 400;
+    color: var(--gray-300);
+  }
+
 }
