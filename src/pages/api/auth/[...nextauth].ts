@@ -13,34 +13,32 @@ export default NextAuth({
 
   callbacks: {
     async session({session}) {
-      if(session) {
-        if(session.user?.email) {
-          try {
-            const userActiveSubscription = await fauna.query(
-              Get(
-                Intersection([
-                  Match(
-                    Index('status_subscription_by_user_id'),
-                    Select(
-                      'ref',
-                      Get(
-                        Match('user_by_email'),
-                        Casefold(session.user.email)
-                      )
+      try {
+        const userActiveSubscription = await fauna.query(
+          Get(
+            Intersection([
+              Match(
+                Index('subscription_by_user_ref'),
+                Select(
+                  'ref',
+                  Get(
+                    Match(
+                      Index('user_by_email'),
+                      Casefold(session.user!.email!)
                     )
-                  ),
-                  Index(
-                    Match('status_subscription_by_user_id'),
-                    'active'
                   )
-                ])
+                )
+              ),
+              Match(
+                Index('subscription_by_status'),
+                'active'
               )
-            )
-            return {...session, expires: session.expires, statusSubscription: userActiveSubscription}
-          } catch {
-            return {...session, expires: session.expires, }
-          }
-        }
+            ])
+          )
+        )
+        return {...session, userActiveSubscription}
+      } catch {
+        return {...session, statusSubscription: null}
       }
     },
 
