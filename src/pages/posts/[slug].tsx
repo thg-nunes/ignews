@@ -1,4 +1,5 @@
 import { GetServerSideProps } from "next";
+import { getSession } from "next-auth/react";
 import Head from "next/head";
 import { RichText } from 'prismic-dom'
 
@@ -44,7 +45,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, params }) =>
 
   if(slug) {
     const prismic = getPrismicClient()
-    await prismic.enableAutoPreviewsFromReq(req)
+    const session = await getSession({ req })
     const response = await prismic.getByUID('post', String(slug), {})
 
     post = {
