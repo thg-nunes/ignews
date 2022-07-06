@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { signIn, useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
 import { getStripeJs } from '../../services/stripe-subscribe'
 import styles from './style.module.scss'
 
@@ -9,11 +10,17 @@ interface SubscribButtonProps {
 
 export const SubscribButton = ({productId}: SubscribButtonProps) => {
   const session = useSession()
+  const router = useRouter()
 
   async function handleSubscrib() {
 
     if(session.status === 'unauthenticated') {
       signIn('github')
+      return
+    }
+
+    if(session.data?.userActiveSubscription){
+      router.push(`/posts`)
       return
     }
 
