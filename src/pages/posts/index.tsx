@@ -56,7 +56,7 @@ export const getStaticProps: GetStaticProps = async () => {
         year: 'numeric'
       }),
       title: post.data.title[0].text,
-      excerpt: post.data.text.find(textType => textType.type === 'paragraph')?.text ?? ''
+      excerpt: post.data.text.find((textType: any) => textType.type === 'paragraph')?.text ?? ''
     }
   ))
 
