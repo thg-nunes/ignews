@@ -62,10 +62,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       line_items: [
         { price: 'price_1LGS4uHfHt62ji1jpTeueJHK', quantity: 1 }
       ],
-      success_url: 'http://localhost:3000/posts',
-      cancel_url: 'http://localhost:3000/',
+      success_url: process.env.SUCCESS_SUBSCRIBE_URL as string,
+      cancel_url: process.env.CANCEL_SUBSCRIBE_URL as string,
       allow_promotion_codes: true,
-
     })
 
     /* o id desse checkout é retornado para usa-lo no redirect to checkout do stripe */
