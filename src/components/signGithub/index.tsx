@@ -7,14 +7,14 @@ import styles from './styles.module.scss'
 export const SignGithub = () => {
   const session = useSession()
 
-  return (session.data !== null && session.data !== undefined) ? (
+  return session ? (
     <button
       type="button"
       className={styles.signGithub}
       onClick={() => signOut()}
     >
       <FaGithub color='#04D361' />
-      {session.data.user?.name}
+      {session.data?.user?.name}
       <FiX
         color='#737380'
         className={styles.closeButton}
