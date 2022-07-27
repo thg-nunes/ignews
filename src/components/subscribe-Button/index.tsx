@@ -4,11 +4,7 @@ import { useRouter } from 'next/router'
 import { getStripeJs } from '../../services/stripe-subscribe'
 import styles from './style.module.scss'
 
-interface SubscribButtonProps {
-  productId: string
-}
-
-export const SubscribButton = ({productId}: SubscribButtonProps) => {
+export const SubscribButton = () => {
   const session = useSession()
   const router = useRouter()
 
