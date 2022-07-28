@@ -1,14 +1,15 @@
 import { render, screen } from "@testing-library/react"
 import { getSession } from "next-auth/react"
 import Post, { getServerSideProps } from "../../../pages/posts/[slug]"
+import { getPrismicClient } from "../../../services/prismic"
 
 jest.mock('next-auth/react')
 jest.mock('../../../services/prismic')
 
 const post = {
   slug: 'any_slug',
-  updatedAt: '20 Abril 2022',
-  content: 'Content of my first post',
+  updatedAt: '20 de Abril de 2022',
+  content: '<p>Content of my first post</p>',
   title: 'This is my first post',
   text: 'Small description of post'
 }
@@ -37,6 +38,44 @@ describe('Post component', () => {
         redirect: {
           destination: '/',
           permanent: false
+        }
+      })
+    )
+  })
+
+  test('getServerSideProps retorna dados corretamente se inscricao ativa', async () => {
+    const getSessionMocked = jest.mocked(getSession)
+    const prismicGetByUIDMocked = jest.mocked(getPrismicClient)
+
+    getSessionMocked.mockResolvedValueOnce({
+      userActiveSubscription: 'active',
+    } as any)
+
+    prismicGetByUIDMocked.mockReturnValueOnce({
+      getByUID: jest.fn().mockResolvedValueOnce({
+        data: {
+          title: [{type: 'heading', text: 'This is my first post'}],
+          text: [{type: 'paragraph', text:'Small description of post'}],
+        },
+        last_publication_date: '04-20-2022'
+      })
+    } as any)
+
+    const response = await getServerSideProps({
+      params: {
+        slug: 'any_slug'
+      }
+    } as any)
+
+    expect(response).toEqual(
+      expect.objectContaining({
+        props: {
+          post: {
+            slug: 'any_slug',
+            title: 'This is my first post',
+            content: '<p>Small description of post</p>',
+            updatedAt: '20 de abril de 2022'
+          }
         }
       })
     )
