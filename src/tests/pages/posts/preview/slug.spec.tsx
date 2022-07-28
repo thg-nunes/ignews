@@ -6,9 +6,7 @@ import PostPreview from '../../../../pages/posts/preview/[slug]'
 
 jest.mock('next-auth/react')
 jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockReturnValueOnce({
-    push: jest.fn()
-  })
+  useRouter: jest.fn()
 }))
 
 const post = {
@@ -21,10 +19,17 @@ const post = {
 
 describe('PostPreview component', () => {
   test('PostPreview renderiza corretamente', () => {
+    const useSessionMocked = jest.mocked(useSession)
+
+    useSessionMocked.mockReturnValueOnce({
+      data: {
+        expires: 'fake_expires'
+      }
+    } as any)
     render(<PostPreview post={post} />)
   })
 
-  test('PostPreview renderiza corretamente', () => {
+  test('User redirecionado caso inscricao nao esteja ativa', () => {
     const useSessionMocked = jest.mocked(useSession)
     const useRouterMocked = jest.mocked(useRouter)
 
@@ -40,6 +45,8 @@ describe('PostPreview component', () => {
     useRouterMocked.mockReturnValueOnce({
       push: pushMock
     } as any)
+
+    render(<PostPreview post={post} />)
 
     expect(pushMock).toHaveBeenCalledWith('/posts/slug-post')
   })
